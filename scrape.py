@@ -87,7 +87,7 @@ except FileNotFoundError:
         print('total tweet count: ', len(data_to_write))
 
 with open(twitter_ids_filename, 'w') as outfile:
-    json.dump(data_to_write, outfile)
+    json.dump(data_to_write, outfile,indent=2)
 
 print('all done here')
 driver.close()
