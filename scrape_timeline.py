@@ -4,21 +4,55 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from time import sleep
 import json
 import datetime
+import mysql.connector
 
-
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="mypassword", database="askmadina")
+mycursor = mydb.cursor()
 # edit these three variables
-user = 'Ask_Al_Qassim'
+screen = 'askjeddh'
+userIds =	{
+	"askjeddh":6,
+	"Ask_jeddeh1":4,
+	"Ask_Makkah_":5,
+	"Ask_almadina":7,
+	"Ask_Alriyadh1":8,
+	"ask_jizan_":142649,
+	"Ask_Al_Qassim":142673,
+	"Ask_6aif":142674,
+	"ask_tourist":179861
+} 
+# Lookup Data
+userCities =	{
+	"askjeddh":236,
+	"Ask_jeddeh1":236,
+	"Ask_Makkah_":232,
+	"Ask_almadina":226,
+	"Ask_Alriyadh1":224,
+	"ask_jizan_":229,
+	"Ask_Al_Qassim":225,
+	"Ask_6aif":237,
+	"ask_tourist":1
+}
+
+userTags =	{
+	"askjeddh":5,
+	"Ask_jeddeh1":5,
+	"Ask_Makkah_":1,
+	"Ask_almadina":3,
+	"Ask_Alriyadh1":4,
+	"ask_jizan_":6,
+	"Ask_Al_Qassim":7,
+	"Ask_6aif":8,
+	"ask_tourist":9
+}
 scroll = 10
 
 # only edit these if you're having problems
 delay = 5  # time to wait on each page load before reading the page
 driver = webdriver.Firefox()  # options are Chrome() Firefox() Safari()
 
-
+user = screen.lower()
 # don't mess with this stuff
-twitter_ids_filename = user + '_ids.json'
-
-user = user.lower()
 ids = []
 
 
@@ -53,21 +87,13 @@ try:
 except NoSuchElementException:
 	print('no tweets on this day')
 
-try:
-    with open(twitter_ids_filename) as f:
-        all_ids = ids + json.load(f)
-        data_to_write = list(set(all_ids))
-        print('tweets found on this scrape: ', len(ids))
-        print('total tweet count: ', len(data_to_write))
-except FileNotFoundError:
-    with open(twitter_ids_filename, 'w') as f:
-        all_ids = ids
-        data_to_write = list(set(all_ids))
-        print('tweets found on this scrape: ', len(ids))
-        print('total tweet count: ', len(data_to_write))
+tweet_ids = list(set(ids))
+for tweet_id in tweet_ids:
+	sql = "INSERT INTO askboot_crawling_tweets (tweet_id, user_id , screen_name ,city_id,tag_id) VALUES (%s, %s ,%s,%s,%s)"
+	val = (tweet_id,userIds[screen],screen,userCities[screen], userTags[screen])
+	mycursor.execute(sql, val)
+	mydb.commit()
 
-with open(twitter_ids_filename, 'w') as outfile:
-    json.dump(data_to_write, outfile ,indent=2)
 
 print('all done here')
 driver.close()

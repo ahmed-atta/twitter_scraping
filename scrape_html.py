@@ -52,16 +52,22 @@ for row in myresult:
 					i += 1
 				except StaleElementReferenceException as e:
 					print('lost element reference', tweet)
+			if not tweet :
+				print('HTML Error')
+				url = "https://twitter.com/" + user + "/status/"+ tweet_id
+				driver.get(url)
+				sleep(16)
 
-			driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-			sleep(delay)
-			scroll -= 1
+			if tweet :
+				driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+				sleep(delay)
+				scroll -= 1
 		## remove duplication
 		temp_list = list(set(replies))
 
 
 		#url = "http://127.0.0.1/_boot/cron_getTweet.php"
-		url = "http://www.askmadina.com/_boot2/cron_getTweet.php"
+		url = "http://www.askmadina.com/_API/api_post.php"
 		payload  = {'tweet_id':tweet_id , 'user':user , 'user_id':user_id,'city_id':city_id,'tag_id':tag_id, 'tweet': tweet , 'replies':  '<hr/>'.join(temp_list)}
 		r = requests.post(url, data = payload)
 		print(r.text)

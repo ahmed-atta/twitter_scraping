@@ -5,20 +5,23 @@ from time import sleep
 import json
 import datetime
 import mysql.connector
+import requests
 
 # Lookup Data
 userCities =	{
-	"Ask_jeddeh1":2231711,
-	"Ask_Makkah_":2232036,
-	"Ask_almadina":2232151,
-	"Ask_Alriyadh1":2232671,
-	"ask_jizan_":2231735,
-	"Ask_Al_Qassim":2233421,
-	"Ask_6aif":2233101,
+	"askjedh":236,
+	"Ask_jeddeh1":236,
+	"Ask_Makkah_":232,
+	"Ask_almadina":226,
+	"Ask_Alriyadh1":224,
+	"ask_jizan_":229,
+	"Ask_Al_Qassim":225,
+	"Ask_6aif":237,
 	"ask_tourist":1
 }
 
 userTags =	{
+	"askjedh":5,
 	"Ask_jeddeh1":5,
 	"Ask_Makkah_":1,
 	"Ask_almadina":3,
@@ -40,7 +43,7 @@ def format_day(date):
 
 def form_url(since, until):
     p1 = 'https://twitter.com/search?f=tweets&vertical=default&q=from%3A'
-    p2 = user + '%20since%3A' + since + '%20until%3A' + \
+    p2 = screen_name + '%20since%3A' + since + '%20until%3A' + \
         until + 'include%3Aretweets&src=typd'
     return p1 + p2
 
@@ -51,7 +54,7 @@ def increment_day(date, i):
 
 #
 # only edit these if you're having problems
-delay = 5  # time to wait on each page load before reading the page
+delay = 10  # time to wait on each page load before reading the page
 driver = webdriver.Firefox()  # options are Chrome() Firefox() Safari()
 # don't mess with this stuff
 
@@ -59,17 +62,20 @@ driver = webdriver.Firefox()  # options are Chrome() Firefox() Safari()
 mydb = mysql.connector.connect(
     host="localhost", user="root", passwd="mypassword", database="askmadina")
 mycursor = mydb.cursor()
-mycursor.execute("SELECT users.id,users.last_name FROM users where type ='Scrap'")
-myresult = mycursor.fetchall()
-for row in myresult:
-    user = row[1]
-    screen_name = row[1]
-    user_id = row[0]
-    start = datetime.datetime(2020,7,10)  # year, month, day
+#mycursor.execute("SELECT users.id,users.last_name FROM users where type ='Scrap'")
+#myresult = mycursor.fetchall()
+url = "http://www.askmadina.com/_API/api_get.php"
+r = requests.get(url)
+users = json.loads(r.text.encode().decode('utf-8-sig'))
+
+for row in users:
+    screen_name = row['screen_name']
+    user_id = row['id']
+    #start = datetime.datetime(2020,8,7)  # year, month, day
     #end = datetime.datetime(2020,6,10)  # year, month, day
+    start = datetime.datetime.now()
+    start = start - datetime.timedelta(days=2) 
     end = datetime.datetime.now() 
-    # twitter_ids_filename = '/var/www/html/askboot_py/twitter_scraping-master/all_ids.json'
-    twitter_ids_filename = end.strftime("%Y%m%d") +"_" + user +".json"
     days = (end - start).days - 1
     ids = []
 
@@ -83,7 +89,7 @@ for row in myresult:
 	    sleep(delay)
 
 	    try:
-	        scroll = 12
+	        scroll = 15
 	        while scroll >= 1:
 	            found_tweets = driver.find_elements_by_tag_name('a')
 	            print('{} tweets found'.format(len(found_tweets)))
@@ -119,21 +125,6 @@ for row in myresult:
 	    mycursor.execute(sql, val)
 	    mydb.commit()
 
-    try:
-	    with open(twitter_ids_filename) as f:
-	        all_ids = ids + json.load(f)
-	        data_to_write = list(set(all_ids))
-	        print('tweets found on this scrape: ', len(ids))
-	        print('total tweet count: ', len(data_to_write))
-    except FileNotFoundError:
-	    with open(twitter_ids_filename, 'w') as f:
-	        all_ids = ids
-	        data_to_write = list(set(all_ids))
-	        print('tweets found on this scrape: ', len(ids))
-	        print('total tweet count: ', len(data_to_write))
-
-    with open(twitter_ids_filename, 'w') as outfile:
-	    json.dump(data_to_write, outfile ,indent=2)
 
 
 

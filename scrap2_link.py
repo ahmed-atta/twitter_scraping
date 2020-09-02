@@ -5,6 +5,7 @@ from time import sleep
 import json
 import datetime
 import mysql.connector
+import requests
 
 
 def format_day(date):
@@ -39,6 +40,11 @@ mycursor = mydb.cursor()
 mycursor.execute(
     "SELECT users.id,users.last_name FROM users where type ='Scrap'")
 myresult = mycursor.fetchall()
+url = "http://www.askmadina.com/_API/api_get.php"
+r = requests.get(url, data = [])
+print(r.text)
+quit() 
+
 for row in myresult:
     user = row[1]
     start = datetime.datetime(2020,5,29)  # year, month, day
