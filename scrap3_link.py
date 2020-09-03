@@ -9,9 +9,10 @@ import requests
 
 # Lookup Data
 userCities =	{
-	"askjedh":236,
+	"askjeddh":236,
 	"Ask_jeddeh1":236,
-	"Ask_Makkah_":232,
+	"Ask_JD1":236,
+	"Ask_makkah_":232,
 	"Ask_almadina":226,
 	"Ask_Alriyadh1":224,
 	"ask_jizan_":229,
@@ -21,9 +22,10 @@ userCities =	{
 }
 
 userTags =	{
-	"askjedh":5,
+	"askjeddh":5,
 	"Ask_jeddeh1":5,
-	"Ask_Makkah_":1,
+	"Ask_JD1":5,
+	"Ask_makkah_":1,
 	"Ask_almadina":3,
 	"Ask_Alriyadh1":4,
 	"ask_jizan_":6,
