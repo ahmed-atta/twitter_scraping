@@ -12,7 +12,7 @@ userCities =	{
 	"askjeddh":236,
 	"Ask_jeddeh1":236,
 	"Ask_JD1":236,
-	"Ask_makkah_":232,
+	"Ask_Makkah_":232,
 	"Ask_almadina":226,
 	"Ask_Alriyadh1":224,
 	"ask_jizan_":229,
@@ -25,7 +25,7 @@ userTags =	{
 	"askjeddh":5,
 	"Ask_jeddeh1":5,
 	"Ask_JD1":5,
-	"Ask_makkah_":1,
+	"Ask_Makkah_":1,
 	"Ask_almadina":3,
 	"Ask_Alriyadh1":4,
 	"ask_jizan_":6,
@@ -56,7 +56,7 @@ def increment_day(date, i):
 
 #
 # only edit these if you're having problems
-delay = 10  # time to wait on each page load before reading the page
+delay = 5  # time to wait on each page load before reading the page
 driver = webdriver.Firefox()  # options are Chrome() Firefox() Safari()
 # don't mess with this stuff
 
@@ -91,7 +91,7 @@ for row in users:
 	    sleep(delay)
 
 	    try:
-	        scroll = 15
+	        scroll = 10
 	        while scroll >= 1:
 	            found_tweets = driver.find_elements_by_tag_name('a')
 	            print('{} tweets found'.format(len(found_tweets)))

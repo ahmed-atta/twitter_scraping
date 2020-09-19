@@ -2,6 +2,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+set_error_handler("var_dump");
 
 require('config.php');
 //define('DS', DIRECTORY_SEPARATOR);
@@ -17,8 +18,12 @@ function remove_emoji($tweet_txt){
 	$tweet_txt = str_replace('<img alt="🇸🇦" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f1f8-1f1e6.svg" class="css-9pa8cd">',"", $tweet_txt);
 	$tweet_txt = str_replace('<img alt="🔴" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f534.svg" class="css-9pa8cd">',"", $tweet_txt);
 	$tweet_txt = str_replace('<img alt="💌" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f48c.svg" class="css-9pa8cd">',"", $tweet_txt);
-	$tweet_txt = str_replace('<img alt="📨" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f4e8.svg" class="css-9pa8cd" style="width:20px;">',"", $tweet_txt);
-	$tweet_txt = str_replace('<img alt="📨" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f4e8.svg" class="css-9pa8cd" style="width:20px;"><br />',"", $tweet_txt);
+	$tweet_txt = str_replace('<img alt="📨" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f4e8.svg" class="css-9pa8cd">',"", $tweet_txt);
+	$tweet_txt = str_replace('<img alt="📨" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f4e8.svg" class="css-9pa8cd"><br>',"", $tweet_txt);
+	$tweet_txt = str_replace('<img alt="🏡" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f3e1.svg" class="css-9pa8cd">',"", $tweet_txt);
+	$tweet_txt = str_replace('<img alt="🏫" draggable="false" src="https://abs-0.twimg.com/emoji/v2/svg/1f3eb.svg" class="css-9pa8cd">',"", $tweet_txt);
+	
+	
 
 	$tweet_txt = str_replace('<img class="Emoji Emoji--forText" src="https://abs.twimg.com/emoji/v2/72x72/2708.png" draggable="false" alt="✈️" title="Airplane" aria-label="Emoji: Airplane">',"", $tweet_txt);
 			
@@ -68,9 +73,7 @@ function get_tweet_text($string)
 
 function get_tweet_time($string){
 
-	$beg_tag = "<div class=\"css-1dbjc4n r-vpgt9t\">";
-    $close_tag = "<a";
-    if(preg_match("($beg_tag(.*)$close_tag)siU", $string, $matching_data)){
+    if(preg_match("/(\d{1,2}):(\d{1,2})(.*)(\d{4})<\/span>/", $string, $matching_data)){
 		$st = strip_tags($matching_data[0]);
 		$st = explode('·', $st);
 		$stime = $st[1]." ".$st[0];
@@ -238,8 +241,9 @@ function create_question($params)
 
 		    $q_id = $mysqli->insert_id;
 
-		    $mysqli->query("INSERT INTO  `questions_locations` (type,location_id,question_id)  VALUES ('City',".$params['location_id'].",".$q_id.") ");
-		    //$mysqli->query("INSERT INTO  `questions_locations` (city_id,question_id)  VALUES (".$params['location_id'].",".$q_id.") ");
+		    if(isset($params['location_id']))
+		    	$mysqli->query("INSERT INTO  `questions_locations` (city_id,question_id)  VALUES (".$params['location_id'].",".$q_id.") ");
+
 		    $mysqli->query("INSERT INTO  `questions_tags` (tag_id,question_id)  VALUES (".$params['tag1_id'].",".$q_id.") ");
 		    $insert_count = 0; 
 
@@ -371,7 +375,7 @@ $tweet_time = get_tweet_time($tweet);
 
 $re_array=  get_replies($replies);
 
-$params['location_id'] = $_POST["city_id"];
+$params['location_id'] = ($_POST["city_id"] != '1')? $_POST["city_id"]  :  null ;
 $params['tag1_id'] = $_POST["tag_id"];
 $params['tweet_id'] = $tweet_id;
 $params['user_id'] =  $_POST["user_id"];
